@@ -8,11 +8,11 @@
 Реализовать только при помощи JS
 
 4) Список фильмов на странице сформировать на основании данных из этого JS файла.
-Отсортировать их по алфавиту 
+Отсортировать их по алфавиту
 
 5) Добавить нумерацию выведенных фильмов */
 
-'use strict';
+"use strict";
 
 const movieDB = {
     movies: [
@@ -20,7 +20,27 @@ const movieDB = {
         "Лига справедливости",
         "Ла-ла лэнд",
         "Одержимость",
-        "Скотт Пилигрим против..."
-    ]
+        "Скотт Пилигрим против...",
+    ],
 };
 
+const promoAdv = document.querySelectorAll(".promo__adv img"),
+    promoBg = document.querySelector(".promo__bg"),
+    promoGenre = promoBg.querySelector(".promo__genre"),
+    promoList = document.querySelector(".promo__interactive-list"),
+    promoItem = document.querySelectorAll(".promo__interactive-item");
+
+promoAdv.forEach((element) => {
+    element.remove();
+});
+promoGenre.textContent = "драма";
+promoBg.style.backgroundImage = "url('img/bg.jpg')";
+promoList.innerHTML = "";
+movieDB.movies.sort().forEach((item, num) => {
+    promoList.innerHTML += `
+		<li class="promo__interactive-item">
+			${num + 1}. ${item}
+			<div class="delete"></div>
+		</li>
+	`;
+});
