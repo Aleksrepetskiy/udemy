@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	box.addEventListener('touchmove', (e)=>{
 		e.preventDefault();
 		console.log('move');
-		console.log(e.touches)
+		console.log( )
 	})
 	box.addEventListener('touchend', (e)=>{
 		e.preventDefault();
