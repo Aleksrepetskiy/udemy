@@ -80,9 +80,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const modal = document.querySelector(".modal"),
         modalBtn = document.querySelectorAll("[data-modal]"),
         modalClose = modal.querySelector("[data-close]");
-		const modalTimer = setTimeout(openModal, 100000);
+		const modalTimer = setTimeout(openModal, 500000000);
 	function openModal() {
-		modal.classList.toggle("show");
+		modal.classList.add("show");
 		document.body.style.overflow = "hidden";
 		clearInterval(modalTimer);
 	}
@@ -94,9 +94,8 @@ window.addEventListener("DOMContentLoaded", () => {
         modal.classList.remove("show");
         document.body.style.overflow = "";
     }
-    modalClose.addEventListener("click", closeModal);
     modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -155,26 +154,27 @@ window.addEventListener("DOMContentLoaded", () => {
 	new MenuCard ("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', '2', '.menu .container').render();
 
 	//FORMS
-
 	const forms = document.querySelectorAll('form');
 	const message = {
-		loading: 'loading...',
-		sucess: 'shanks',
+		loading: 'img/spinner.svg',
+		sucess: 'Спасибо мы с вами свяжемся',
 		failure: 'error'
 	}
 	forms.forEach(item => {
 		postData(item);
 	})
 
-
 	function postData (form) {
 		form.addEventListener('submit', function(e) {
 			e.preventDefault();
 
-			const statusMessage = document.createElement('div');
-			statusMessage.classList.add('status');
-			statusMessage.textContent = message.loading;
-			form.append(statusMessage);
+			const statusMessage = document.createElement('img');
+			statusMessage.src = message.loading;
+			statusMessage.style.cssText = `
+				display: block;
+				margin: 0 auto;
+			`
+			form.insertAdjacentElement('afterend', statusMessage);
 
 			const request = new XMLHttpRequest();
 			request.open('POST', 'server.php');
@@ -190,17 +190,37 @@ window.addEventListener("DOMContentLoaded", () => {
 			request.addEventListener('load', ()=>{
 				if (request.status === 200) {
 					console.log(request.response);
-					statusMessage.textContent = message.sucess;
 					form.reset();
-					setTimeout(()=>{
-						statusMessage.remove();
-					}, 2000)
+					statusMessage.remove();
+					showModalFidback(message.sucess);
 				}else {
-					statusMessage.textContent = message.error;
+					showModalFidback(message.error);
 				}
 			})
 		})
 	}
+	function showModalFidback (message) {
+		const prevModalDialog = document.querySelector('.modal__dialog');
+		prevModalDialog.classList.add('hide');
+		openModal();
+		const modalFidback = document.createElement('div');
+		modalFidback.classList.add('modal__dialog');
+		modalFidback.innerHTML = `
+			<div class="modal__content">
+                    <div class="modal__close" data-close>&times;</div>
+                    <div class="modal__title">${message}</div>
+            </div>
+
+		`
+		document.querySelector('.modal').append(modalFidback);
+		setTimeout(()=>{
+			prevModalDialog.classList.remove('hide');
+			modalFidback.remove();
+			closeModal()
+		}, 5000)
+	}
+
+
     setClock(".timer", deadline);
     hideTabContents();
     showTabContent();
