@@ -164,6 +164,44 @@ window.addEventListener("DOMContentLoaded", () => {
 		postData(item);
 	})
 
+	//Старая техника AjAX
+	// function postData (form) {
+	// 	form.addEventListener('submit', function(e) {
+	// 		e.preventDefault();
+
+	// 		const statusMessage = document.createElement('img');
+	// 		statusMessage.src = message.loading;
+	// 		statusMessage.style.cssText = `
+	// 			display: block;
+	// 			margin: 0 auto;
+	// 		`
+	// 		form.insertAdjacentElement('afterend', statusMessage);
+
+	// 		const request = new XMLHttpRequest();
+	// 		request.open('POST', 'server.php');
+	// 		request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+	// 		const formDate = new FormData(form);
+	// 		const obj = {};
+	// 		formDate.forEach((value, key)=>{
+	// 			obj[key] = value;
+	// 		})
+	// 		const json = JSON.stringify(obj)
+	// 		request.send(json);
+
+	// 		request.addEventListener('load', ()=>{
+	// 			if (request.status === 200) {
+	// 				console.log(request.response);
+	// 				form.reset();
+	// 				statusMessage.remove();
+	// 				showModalFidback(message.sucess);
+	// 			}else {
+	// 				showModalFidback(message.error);
+	// 			}
+	// 		})
+	// 	})
+	// }
+
+	//вызов AJAX через FETCH API
 	function postData (form) {
 		form.addEventListener('submit', function(e) {
 			e.preventDefault();
@@ -176,26 +214,31 @@ window.addEventListener("DOMContentLoaded", () => {
 			`
 			form.insertAdjacentElement('afterend', statusMessage);
 
-			const request = new XMLHttpRequest();
-			request.open('POST', 'server.php');
-			request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 			const formDate = new FormData(form);
 			const obj = {};
 			formDate.forEach((value, key)=>{
 				obj[key] = value;
 			})
-			const json = JSON.stringify(obj)
-			request.send(json);
 
-			request.addEventListener('load', ()=>{
-				if (request.status === 200) {
-					console.log(request.response);
-					form.reset();
-					statusMessage.remove();
-					showModalFidback(message.sucess);
-				}else {
-					showModalFidback(message.error);
-				}
+			fetch('server.php', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+					// 'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: JSON.stringify(obj)
+			})
+			.then(data => data.text())
+			.then((data) => {
+				console.log(data);
+				statusMessage.remove();
+				showModalFidback(message.sucess);
+			})
+			.catch(()=>{
+				showModalFidback(message.failure);
+			})
+			.finally(()=>{
+				form.reset();
 			})
 		})
 	}
