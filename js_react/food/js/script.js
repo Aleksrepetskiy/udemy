@@ -267,4 +267,8 @@ window.addEventListener("DOMContentLoaded", () => {
     setClock(".timer", deadline);
     hideTabContents();
     showTabContent();
+
+	fetch('db.json')
+	.then(data => data.json())
+	.then(res => console.log(res));
 });
