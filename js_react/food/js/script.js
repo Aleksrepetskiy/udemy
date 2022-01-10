@@ -149,9 +149,19 @@ window.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	new MenuCard ("img/tabs/vegy.jpg", "vegy", 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', '50', '.menu .container', 'menu__item', 'big').render();
-	new MenuCard ("img/tabs/elite.jpg", "elite", 'Меню “Премиум”', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', '10', '.menu .container', 'menu__item').render();
-	new MenuCard ("img/tabs/post.jpg", "post", 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', '2', '.menu .container').render();
+	const getResourse = async (url) => {
+		const res = await fetch(url);
+		if(!res.ok) {
+			throw new Error(`Could not fetchcto ${url} status promise ${res.status}`)
+		}
+		return await res.json();
+	}
+	getResourse('http://localhost:3000/menu')
+		.then((data)=>{
+			data.forEach(({img, altimg, title, descr, price})=>{
+				new MenuCard(img, altimg, title, descr, price,'.menu .container').render();
+			})
+		})
 
 	//FORMS
 	const forms = document.querySelectorAll('form');
@@ -161,8 +171,19 @@ window.addEventListener("DOMContentLoaded", () => {
 		failure: 'error'
 	}
 	forms.forEach(item => {
-		postData(item);
+		bindPostData(item);
 	})
+
+	const postData = async (url, data) => {
+		const res = await fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: data
+		});
+		return await res.json();
+	}
 
 	//Старая техника AjAX
 	// function postData (form) {
@@ -202,7 +223,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	// }
 
 	//вызов AJAX через FETCH API
-	function postData (form) {
+	function bindPostData (form) {
 		form.addEventListener('submit', function(e) {
 			e.preventDefault();
 
@@ -215,20 +236,13 @@ window.addEventListener("DOMContentLoaded", () => {
 			form.insertAdjacentElement('afterend', statusMessage);
 
 			const formDate = new FormData(form);
-			const obj = {};
-			formDate.forEach((value, key)=>{
-				obj[key] = value;
-			})
+			const json = JSON.stringify(Object.fromEntries(formDate.entries()))
+			// const obj = {};
+			// formDate.forEach((value, key)=>{
+			// 	obj[key] = value;
+			// })
 
-			fetch('server.php', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-					// 'Content-Type': 'application/x-www-form-urlencoded',
-				},
-				body: JSON.stringify(obj)
-			})
-			.then(data => data.text())
+			postData('http://localhost:3000/requests', json)
 			.then((data) => {
 				console.log(data);
 				statusMessage.remove();
