@@ -7,6 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
     function hideTabContents() {
         tabContents.forEach((item) => {
             //item.style.display = "none"
+            //item.style.display = "none"
             item.classList.add("hide");
             item.classList.remove("show", "fade");
         });
@@ -277,6 +278,48 @@ window.addEventListener("DOMContentLoaded", () => {
 		}, 5000)
 	}
 
+	//Slider
+
+	const nextBtn = document.querySelector('.offer__slider-next'),
+		prevBtn = document.querySelector('.offer__slider-prev'),
+		slides = document.querySelectorAll('.offer__slide'),
+		total = document.querySelector('#total'),
+		current = document.querySelector('#current');
+	let slideIndex = 1;
+
+	showSlides(slideIndex);
+
+
+	if(slides.length < 10) {
+		total.textContent = `0${slides.length}`;
+	}else {
+		total.textContent = slides.length;
+	}
+
+	function showSlides(n) {
+		if(n > slides.length) {
+			slideIndex = 1;
+		}
+		if(n < 1) {
+			slideIndex = slides.length;
+		}
+		if(slides.length < 10) {
+			current.textContent = `0${slideIndex}`;
+		}else {
+			current.textContent = slideIndex;
+		}
+		slides.forEach((item)=> item.style.display = 'none');
+		slides[slideIndex - 1].style.display = 'block';
+	}
+	function rotateSlide (n) {
+		showSlides(slideIndex += n);
+	}
+	prevBtn.addEventListener('click', ()=> {
+		rotateSlide(-1);
+	})
+	nextBtn.addEventListener('click', ()=> {
+		rotateSlide(1)
+	})
 
     setClock(".timer", deadline);
     hideTabContents();
