@@ -29,5 +29,14 @@ btn.addEventListener('click', ()=>{
 		localStorage.setItem('bgColor', 'chenged');
 		form.style.backgroundColor = 'red';
 	}
-
 })
+//закидывание обьекта в localStorage
+const obj = {
+	name: 'sasha',
+	age: '25'
+}
+const serialaze = JSON.stringify(obj);
+localStorage.setItem('alex', serialaze);
+
+//парсинг обьекта из localStorage
+console.log(JSON.parse(localStorage.getItem('alex')));
